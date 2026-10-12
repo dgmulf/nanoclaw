@@ -1,0 +1,58 @@
+#!/bin/sh
+# NanoClaw wrapper for zotero-cli (from the zotero-mcp-server PyPI package).
+#
+# The agent image is shared and pulled pre-hardened, so the Python package is
+# not baked in. Instead it is installed once, pinned, into the group workspace
+# (persists across sessions) the first time this wrapper runs. The group's
+# image must carry python3 + python3-venv (per-group apt packages).
+#
+# Credentials never live here: the gateway injects `Authorization: Bearer <key>`
+# on requests to api.zotero.org. ZOTERO_API_KEY only has to be non-empty so
+# zotero-cli picks web mode.
+set -eu
+
+VERSION="0.14.1"
+STATE="${ZOTERO_CLI_HOME:-/workspace/agent/.zotero-cli}"
+VENV="$STATE/venv-$VERSION"
+
+# Python's requests uses certifi rather than SSL_CERT_FILE; point it (and pip)
+# at the gateway's combined CA bundle so TLS through the proxy verifies.
+if [ -n "${SSL_CERT_FILE:-}" ]; then
+  export REQUESTS_CA_BUNDLE="${REQUESTS_CA_BUNDLE:-$SSL_CERT_FILE}"
+  export PIP_CERT="${PIP_CERT:-$SSL_CERT_FILE}"
+fi
+
+if [ ! -x "$VENV/bin/zotero-cli" ]; then
+  if ! command -v python3 >/dev/null 2>&1 || ! python3 -c 'import ensurepip' >/dev/null 2>&1; then
+    echo "zotero-cli: python3 + python3-venv are not in this container image." >&2
+    echo "Ask an admin to add them: ncl groups config add-package --apt python3 python3-venv" >&2
+    exit 127
+  fi
+  mkdir -p "$STATE"
+  (
+    flock 9
+    if [ ! -x "$VENV/bin/zotero-cli" ]; then
+      echo "zotero-cli: first run, installing zotero-mcp-server==$VERSION into $VENV ..." >&2
+      rm -rf "$VENV"
+      python3 -m venv "$VENV"
+      if ! "$VENV/bin/pip" install --quiet --disable-pip-version-check \
+          "zotero-mcp-server==$VERSION" >&2; then
+        rm -rf "$VENV"  # don't leave a half-built venv behind
+        exit 1
+      fi
+    fi
+  ) 9>"$STATE/.install.lock"
+fi
+
+if [ -z "${ZOTERO_LIBRARY_ID:-}" ] && [ -f "$STATE/library_id" ]; then
+  ZOTERO_LIBRARY_ID="$(tr -d ' \n' < "$STATE/library_id")"
+fi
+if [ -z "${ZOTERO_LIBRARY_TYPE:-}" ] && [ -f "$STATE/library_type" ]; then
+  ZOTERO_LIBRARY_TYPE="$(tr -d ' \n' < "$STATE/library_type")"
+fi
+export ZOTERO_LIBRARY_ID="${ZOTERO_LIBRARY_ID:-}"
+export ZOTERO_LIBRARY_TYPE="${ZOTERO_LIBRARY_TYPE:-user}"
+export ZOTERO_API_KEY="${ZOTERO_API_KEY:-placeholder}"
+export ZOTERO_LOCAL="false"
+
+exec "$VENV/bin/zotero-cli" "$@"
