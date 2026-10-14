@@ -136,6 +136,10 @@ RUN set -eu; \
     rm -rf /tmp/notion.tar.gz "/tmp/ntn-${target}"
 COPY notion-cli/ntn /usr/local/bin/ntn
 
+# ---- Exa Search (skill in container/skills/exa-search) ----------------------
+# Non-secret marker; the credential gateway injects the real x-api-key for api.exa.ai.
+ENV EXA_API_KEY=onecli-managed
+
 # ---- ncl CLI wrapper ----------------------------------------------------------
 # Actual script lives in the mounted source at /app/src/cli/ncl.ts.
 RUN printf '#!/bin/sh\nexec bun /app/src/cli/ncl.ts "$@"\n' > /usr/local/bin/ncl && \
