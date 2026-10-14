@@ -1,0 +1,4 @@
+#!/bin/sh
+# Non-secret marker; the credential gateway injects the real token in transit.
+export NOTION_API_TOKEN=onecli-managed
+exec /usr/local/lib/notion/ntn "$@"

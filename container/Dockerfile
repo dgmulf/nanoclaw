@@ -120,6 +120,22 @@ COPY cli-tools.json install-cli-tools.sh /tmp/
 RUN --mount=type=cache,target=/root/.cache/pnpm \
     sh /tmp/install-cli-tools.sh /tmp/cli-tools.json
 
+# ---- Notion CLI (official native release, checksum pinned) --------------------
+ARG NOTION_CLI_VERSION=0.23.20
+RUN set -eu; \
+    case "$(uname -m)" in \
+      x86_64) target=x86_64-unknown-linux-musl; checksum=fec196e491d4a6cd70ec3d43885526cc4444d5c6a9780a53ae536f83044250fa ;; \
+      aarch64|arm64) target=aarch64-unknown-linux-musl; checksum=b86424b2411270e932e05f140322923e8250f70877e7d3ab247ea604fb1d5293 ;; \
+      *) echo "Unsupported Notion CLI architecture" >&2; exit 1 ;; \
+    esac; \
+    curl -fsSL "https://ntn.dev/releases/v${NOTION_CLI_VERSION}/ntn-${target}.tar.gz" -o /tmp/notion.tar.gz; \
+    echo "${checksum}  /tmp/notion.tar.gz" | sha256sum -c -; \
+    tar -xzf /tmp/notion.tar.gz -C /tmp; \
+    mkdir -p /usr/local/lib/notion; \
+    install -m 0755 "/tmp/ntn-${target}/ntn" /usr/local/lib/notion/ntn; \
+    rm -rf /tmp/notion.tar.gz "/tmp/ntn-${target}"
+COPY notion-cli/ntn /usr/local/bin/ntn
+
 # ---- ncl CLI wrapper ----------------------------------------------------------
 # Actual script lives in the mounted source at /app/src/cli/ncl.ts.
 RUN printf '#!/bin/sh\nexec bun /app/src/cli/ncl.ts "$@"\n' > /usr/local/bin/ncl && \
