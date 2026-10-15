@@ -1,5 +1,15 @@
 # Upgrading the OneCLI gateway
 
+**Fork backports:** this fork automatically applies the supported 1.42.0 image
+with Codex account routing and ChatGPT OAuth refresh during local gateway setup.
+After any manual stock-image replacement described below, run
+`pnpm exec tsx .claude/skills/add-onecli/scripts/local-gateway-patch.ts` from the
+fork root to restore both fixes. A patched deployment reports
+`onecli-nanoclaw-codex:1.42.0-refresh1` as its image. See
+[the backport build and rollback guide](../container/onecli-codex-routing/README.md).
+The following upstream-version migration guidance still applies when changing
+the underlying gateway release; do not advance past the supported 1.42.0 pin.
+
 NanoClaw talks to the OneCLI gateway (credential vault + egress proxy) through `@onecli-sh/sdk`. The gateway is an external component with its own release line, so NanoClaw pins the **sanctioned gateway version** in the OneCLI skill's [`.claude/skills/add-onecli/versions.json`](../.claude/skills/add-onecli/versions.json) under `onecli-gateway` (not the `versions.json` at the project root). When an update moves that pin, the gateway must be upgraded — this doc is the migration path. It is written to be handed to a coding agent verbatim: detect → upgrade → verify → rollback.
 
 There is deliberately **no runtime version check, and setup does not migrate the gateway for you**: the gateway is a separate out-of-band component, and the migrator is your coding agent running `/update-nanoclaw`. The update does not detect a pin move on its own. From 2026.10.0 on, release notes that move the `onecli-gateway` pin carry a `[BREAKING]` line, which stops the update until this doc has been followed; earlier pin moves were not marked, so an older gateway can lag behind its pin. The Detect step below shows whether yours does. (Setup detects a pre-`/v1` gateway and points at this doc, but never upgrades it.) Run the steps below verbatim.

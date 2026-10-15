@@ -38,9 +38,9 @@ import './onecli.js';
 
 ## Configure the gateway
 
-The setup script safely reuses a healthy existing installation, installs the pinned local gateway when absent, or uses `NANOCLAW_ONECLI_API_HOST` and `NANOCLAW_ONECLI_API_TOKEN` for a remote gateway.
+The setup script installs the pinned gateway when absent or reuses an existing installation. This fork automatically builds and reconciles the account-routing and OAuth-refresh backports for supported local Compose gateways, with a private Compose backup and health-checked rollback. Remote gateways (`NANOCLAW_ONECLI_API_HOST`) must apply the backports on their own host. See [fork backports](../../../container/onecli-codex-routing/README.md).
 
-This integration supports exactly the gateway version pinned in `.claude/skills/add-onecli/versions.json` (`onecli-gateway`, today 1.42.0; not the `versions.json` at the project root). OneCLI 1.43 and later remove the agent secret-assignment API used below, so 1.43+ is not supported for now. Setup reuses an existing gateway without checking its version: follow [Upgrading the OneCLI gateway](payload/docs/onecli-upgrades.md) to check it and to move it to the pin. The CLI (`onecli-cli`) and SDK (`onecli-sdk`) have their own pins.
+This integration supports exactly the gateway version pinned in `.claude/skills/add-onecli/versions.json` (`onecli-gateway`, today 1.42.0; not the `versions.json` at the project root). OneCLI 1.43 and later remove the agent secret-assignment API used below, so 1.43+ is not supported for now. The fork backport helper refuses to replace an unsupported local gateway image: follow [Upgrading the OneCLI gateway](payload/docs/onecli-upgrades.md) to check it and to move it to the pin. The CLI (`onecli-cli`) and SDK (`onecli-sdk`) have their own pins.
 
 ```nc:run effect:external
 pnpm exec tsx .claude/skills/add-onecli/scripts/setup.ts
@@ -59,9 +59,8 @@ a key in `.env`, command arguments, or the container environment.
 - Moving an API key to another exact host keeps its stored value, so a blank
   answer at the key prompt completes the move after confirmation.
 - Existing OneCLI credential names and formats remain compatible.
-- ChatGPT logins need manual reauthentication after expiry on the pinned
-  OneCLI 1.42.0; see [ChatGPT OAuth refresh](references/chatgpt-oauth-refresh.md)
-  for the limitation and upgrade constraints.
+- ChatGPT tokens refresh automatically on this fork’s patched local 1.42.0 image.
+  Revoked refresh tokens still require sign-in; see [ChatGPT OAuth refresh](references/chatgpt-oauth-refresh.md).
 
 ## Validate
 

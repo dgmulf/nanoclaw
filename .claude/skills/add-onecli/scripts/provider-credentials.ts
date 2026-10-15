@@ -275,8 +275,8 @@ export function encodeOneCliValue(target: GatewayCredentialTarget, value: string
   if (typeof value === 'string' || value.profile !== target.oauth.profile) {
     throw new Error(`This connection stores the ${target.oauth.profile} OAuth profile.`);
   }
-  // NanoClaw's pinned OneCLI cannot refresh this record on its own; see
-  // .claude/skills/add-onecli/references/chatgpt-oauth-refresh.md for the manual procedure.
+  // This fork's 1.42.0 gateway image backports the required OAuth client ID.
+  // Refresh stays in the gateway; this adapter only stores the native shape.
   return JSON.stringify({
     tokens: {
       access_token: value.accessToken,

@@ -3,10 +3,9 @@
  *
  * Two modes:
  *   (default) run the OneCLI installer, configure api-host, write .env.
- *   --reuse   skip the installer; reuse the onecli instance already running
- *             on the host. Required for users who have other apps bound to
- *             an existing gateway, since re-running the installer rebinds
- *             the listener and breaks those consumers.
+ *   --reuse   skip the installer; preserve the existing gateway and credentials.
+ *             This fork reconciles its 1.42.0 backports for managed local
+ *             gateways; remote gateways are left to their operator.
  *
  * Emits ONECLI_URL and polls /health so downstream steps (auth, service)
  * get a ready gateway.
@@ -20,6 +19,7 @@ import { fileURLToPath } from 'url';
 
 import { log } from '../../../../src/log.js';
 import { emitStatus } from '../../../../setup/status.js';
+import { ensureLocalGatewayPatch } from './local-gateway-patch.js';
 
 const LOCAL_BIN = path.join(os.homedir(), '.local', 'bin');
 
@@ -470,8 +470,8 @@ export async function run(args: string[]): Promise<void> {
   }
 
   if (reuse) {
-    // Reuse-mode: don't touch the running gateway at all. Just verify it
-    // exists, read its api-host, write ONECLI_URL to .env, and move on.
+    // Reuse credentials and settings; reconcile fork backports only for a
+    // supported Compose gateway verified to serve this URL.
     const version = onecliVersion();
     if (!version) {
       emitStatus('ONECLI', {
@@ -495,7 +495,9 @@ export async function run(args: string[]): Promise<void> {
       process.exit(1);
     }
     writeEnvOnecliUrl(url);
-    log.info('Reusing existing OneCLI', { url });
+    const patch = await ensureLocalGatewayPatch(url);
+    log.info('Reusing existing OneCLI', { url, patch });
+    if (patch === 'external') log.warn('External OneCLI gateway: apply this fork’s backports on the gateway host');
     const healthy = await pollHealth(url, 5000);
     const v1Status = await verifyGatewayV1(url);
     const v1Hint = gatewayV1Hint(v1Status);
@@ -559,6 +561,8 @@ export async function run(args: string[]): Promise<void> {
 
   writeEnvOnecliUrl(url);
   log.info('Wrote ONECLI_URL to .env', { url });
+  const patch = await ensureLocalGatewayPatch(url);
+  if (patch === 'external') throw new Error('Fresh OneCLI gateway could not be identified for fork backports');
 
   const healthy = await pollHealth(url, 15000);
   const v1Status = await verifyGatewayV1(url);
