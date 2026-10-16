@@ -80,10 +80,10 @@ describe('native host OpenCode lifecycle', () => {
     touch(config, '{"model":"user/chosen-model"}');
     edge.spawnSync.mockImplementation((_binary: string, args: string[]) => ({
       status: 0,
-      stdout: args[0] === '--help' ? '      --prompt        prompt to use [string]' : '1.18.26',
+      stdout: args[0] === '--help' ? '      --prompt        prompt to use [string]' : '1.18.31',
     }));
     expect(await hostOpenCode.prepare(root)).toBe('available');
-    expect(findHostOpenCode(root)).toEqual({ binary, version: '1.18.26' });
+    expect(findHostOpenCode(root)).toEqual({ binary, version: '1.18.31' });
     expect(fs.readFileSync(binary, 'utf8')).toBe('existing binary');
     expect(fs.readFileSync(config, 'utf8')).toBe('{"model":"user/chosen-model"}');
     expect(edge.spawn).not.toHaveBeenCalled();
@@ -92,11 +92,11 @@ describe('native host OpenCode lifecycle', () => {
 
   it('rejects an old CLI and one without the maintenance prompt option', () => {
     touch(path.join(root, 'bin/opencode'));
-    edge.spawnSync.mockReturnValue({ status: 0, stdout: '1.18.24' });
+    edge.spawnSync.mockReturnValue({ status: 0, stdout: '1.18.29' });
     expect(findHostOpenCode(root)).toBeUndefined();
     edge.spawnSync.mockImplementation((_binary: string, args: string[]) => ({
       status: 0,
-      stdout: args[0] === '--help' ? 'Usage: opencode [project]' : '1.18.25',
+      stdout: args[0] === '--help' ? 'Usage: opencode [project]' : '1.18.30',
     }));
     expect(findHostOpenCode(root)).toBeUndefined();
   });
@@ -140,7 +140,7 @@ describe('native host OpenCode lifecycle', () => {
           ? '      --prompt        prompt to use [string]'
           : binary === native
             ? '1.19.0'
-            : '1.18.25',
+            : '1.18.30',
     }));
     expect(findHostOpenCode(root)).toEqual({ binary: native, version: '1.19.0' });
   });
@@ -185,7 +185,7 @@ describe('native host OpenCode lifecycle', () => {
     edge.postinstallExitCode = 1;
     expect(await hostOpenCode.prepare(root)).toBe('unavailable');
     edge.postinstallExitCode = 0;
-    edge.spawnSync.mockReturnValueOnce({ status: 1, stdout: '' }).mockReturnValue({ status: 0, stdout: '1.18.24' });
+    edge.spawnSync.mockReturnValueOnce({ status: 1, stdout: '' }).mockReturnValue({ status: 0, stdout: '1.18.29' });
     expect(await hostOpenCode.prepare(root)).toBe('unavailable');
   });
 

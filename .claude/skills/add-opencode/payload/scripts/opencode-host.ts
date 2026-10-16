@@ -8,7 +8,7 @@ import * as p from '@clack/prompts';
 
 import { pathToFileURL } from 'url';
 
-export const OPENCODE_HOST_INSTALL_VERSION = '1.18.25';
+export const OPENCODE_HOST_INSTALL_VERSION = '1.18.30';
 
 function managedBinary(root: string): string {
   return path.join(root, 'data', 'host-harness', 'opencode', 'node_modules', '.bin', 'opencode');

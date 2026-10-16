@@ -41,7 +41,7 @@ and is independent of the container's gateway credentials. Installed setup failu
 use the existing provider failure-assist hook, including wizard authentication
 and installation-check failures. Host diagnostic context is model input and may
 remain in native OpenCode history; deleting its private temporary file does not
-erase those records. The helper requires stable OpenCode 1.18.25 or newer with
+erase those records. The helper requires stable OpenCode 1.18.30 or newer with
 `--prompt` and prefers the newest compatible installation it finds.
 `--debug`, `--update` and failure help launch it with an `OPENCODE_PERMISSION`
 override, so OpenCode asks before every edit and command even when the
@@ -144,16 +144,16 @@ import './opencode.js';
 ```
 
 Install the SDK in the runner's Bun package and add the matching CLI manifest
-entry with trusted postinstall enabled. Both pins must remain exactly 1.18.25. When refreshing an existing install,
+entry with trusted postinstall enabled. Both pins must remain exactly 1.18.30. When refreshing an existing install,
 replace both old pin entries; presence alone does not establish compatibility.
 This updates the runner package and lockfile; there is no host SDK dependency.
 
 ```nc:dep manager:bun cwd:container/agent-runner when:opencode_core_ready=yes
-@opencode-ai/sdk@1.18.25
+@opencode-ai/sdk@1.18.30
 ```
 
 ```nc:json-merge into:container/cli-tools.json key:name when:opencode_core_ready=yes
-{"name":"opencode-ai","version":"1.18.25","onlyBuilt":true}
+{"name":"opencode-ai","version":"1.18.30","onlyBuilt":true}
 ```
 
 Run the host build, runner typecheck, host/auth tests, and all provider tests.
@@ -328,7 +328,7 @@ MCP configuration and container policy. See [ARCHITECTURE.md](ARCHITECTURE.md) f
 turn completion, memory snapshots, offline startup, cancellation, and MCP timeouts.
 
 For reproducible native integration coverage, download the official OpenCode
-1.18.25 binary and run from `container/agent-runner`:
+1.18.30 binary and run from `container/agent-runner`:
 
 ```bash
 OPENCODE_TEST_BINARY=/absolute/path/opencode bun test --isolate src/providers/opencode.native.test.ts

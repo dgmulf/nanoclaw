@@ -37,7 +37,7 @@ natively discovers `.claude/skills`, including debugging and update instructions
 Host credentials and model configuration remain native to OpenCode, separate
 from the container's gateway-managed credentials. Existing native settings are
 preserved.
-The helper requires stable OpenCode 1.18.25 or newer with the `--prompt` option.
+The helper requires stable OpenCode 1.18.30 or newer with the `--prompt` option.
 It selects the newest compatible installation it finds, so an older managed copy
 does not shadow a newer native CLI.
 

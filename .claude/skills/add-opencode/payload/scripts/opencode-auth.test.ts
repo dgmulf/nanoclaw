@@ -215,8 +215,8 @@ describe('OpenCode setup payload', () => {
       dependencies?: Record<string, string>;
     };
     const cli = tools.find((entry) => entry.name === 'opencode-ai');
-    expect(cli).toEqual({ name: 'opencode-ai', version: '1.18.25', onlyBuilt: true });
-    expect(runner.dependencies?.['@opencode-ai/sdk']).toBe('1.18.25');
+    expect(cli).toEqual({ name: 'opencode-ai', version: '1.18.30', onlyBuilt: true });
+    expect(runner.dependencies?.['@opencode-ai/sdk']).toBe('1.18.30');
   });
 });
 
@@ -392,11 +392,11 @@ describe('OpenCode installation declarations', () => {
     fs.cpSync(path.join(skill, 'payload'), root, { recursive: true });
     fs.writeFileSync(
       path.join(root, 'container/cli-tools.json'),
-      JSON.stringify([{ name: 'opencode-ai', version: '1.18.25', onlyBuilt: true }]),
+      JSON.stringify([{ name: 'opencode-ai', version: '1.18.30', onlyBuilt: true }]),
     );
     fs.writeFileSync(
       path.join(root, 'container/agent-runner/package.json'),
-      JSON.stringify({ dependencies: { '@opencode-ai/sdk': '1.18.25' } }),
+      JSON.stringify({ dependencies: { '@opencode-ai/sdk': '1.18.30' } }),
     );
     for (const barrel of [
       'src/providers/index.ts',
@@ -443,13 +443,13 @@ describe('OpenCode installation declarations', () => {
   });
   it.each([
     { version: '1.4.17', onlyBuilt: true },
-    { version: '1.18.25', onlyBuilt: false },
+    { version: '1.18.30', onlyBuilt: false },
   ])('checks declared CLI fields: %j', async (fields) => {
     fs.writeFileSync(path.join(root, 'container/cli-tools.json'), JSON.stringify([{ name: 'opencode-ai', ...fields }]));
     await expect(checkOpenCodeInstall()).rejects.toThrow('declaration');
   });
   it('takes dependency and CLI pins from the skill instead of duplicating version constants', async () => {
-    fs.writeFileSync(skillFile, fs.readFileSync(skillFile, 'utf8').replaceAll('1.18.25', '9.9.9'));
+    fs.writeFileSync(skillFile, fs.readFileSync(skillFile, 'utf8').replaceAll('1.18.30', '9.9.9'));
     fs.writeFileSync(
       path.join(root, 'container/agent-runner/package.json'),
       JSON.stringify({ dependencies: { '@opencode-ai/sdk': '9.9.9' } }),

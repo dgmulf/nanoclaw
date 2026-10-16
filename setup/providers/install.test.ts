@@ -95,7 +95,7 @@ describe('OpenCode setup installation and refresh', () => {
     await applyProviderSkill(skill, directory);
     fs.writeFileSync(
       path.join(directory, 'container/agent-runner/package.json'),
-      '{"dependencies":{"@opencode-ai/sdk":"1.18.25"}}',
+      '{"dependencies":{"@opencode-ai/sdk":"1.18.30"}}',
     );
     const before = tree(directory);
     fixture.commands.length = 0;
@@ -167,7 +167,7 @@ describe('OpenCode setup installation and refresh', () => {
     );
     expect(
       fixture.commands.some((command) =>
-        /pnpm --package=bun@1\.4\.0 dlx bun add @opencode-ai\/sdk@1\.18\.25/.test(command),
+        /pnpm --package=bun@1\.4\.0 dlx bun add @opencode-ai\/sdk@1\.18\.30/.test(command),
       ),
     ).toBe(true);
     expect(
@@ -190,9 +190,9 @@ describe('OpenCode setup installation and refresh', () => {
     expect(result.changed).toBe(true);
     expect(fs.readFileSync(path.join(directory, 'scripts/opencode-auth.ts'), 'utf8')).toContain('runOpenCodeSetupAuth');
     expect(JSON.parse(fs.readFileSync(path.join(directory, 'container/cli-tools.json'), 'utf8'))).toEqual([
-      { name: 'opencode-ai', version: '1.18.25', onlyBuilt: true },
+      { name: 'opencode-ai', version: '1.18.30', onlyBuilt: true },
     ]);
-    expect(fixture.commands.filter((command) => command.includes('bun add @opencode-ai/sdk@1.18.25'))).toHaveLength(2);
+    expect(fixture.commands.filter((command) => command.includes('bun add @opencode-ai/sdk@1.18.30'))).toHaveLength(2);
     expect(
       fs.readFileSync(path.join(directory, 'setup/providers/index.ts'), 'utf8').match(/import '.\/opencode.js'/g),
     ).toHaveLength(1);

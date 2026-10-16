@@ -43,10 +43,10 @@ describe('OpenCode host payload', () => {
       fs.readFileSync(new URL('../../container/agent-runner/package.json', import.meta.url), 'utf8'),
     );
     expect(tools.find((entry: { name: string }) => entry.name === 'opencode-ai')).toMatchObject({
-      version: '1.18.25',
+      version: '1.18.30',
       onlyBuilt: true,
     });
-    expect(runner.dependencies['@opencode-ai/sdk']).toBe('1.18.25');
+    expect(runner.dependencies['@opencode-ai/sdk']).toBe('1.18.30');
   });
   it('registers the implementation and version 1 surfaces through the actual barrels', () => {
     expect(getProviderContainerConfig('opencode')).toBeTypeOf('function');

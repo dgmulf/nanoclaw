@@ -19,7 +19,7 @@ it.skipIf(!process.env.OPENCODE_TEST_BINARY)(
   'runs native turns, compaction, inherited memory, cancellation and a 65-second MCP call',
   async () => {
     const binary = process.env.OPENCODE_TEST_BINARY!;
-    assert.equal(execFileSync(binary, ['--version'], { encoding: 'utf8' }).trim(), '1.18.25');
+    assert.equal(execFileSync(binary, ['--version'], { encoding: 'utf8' }).trim(), '1.18.30');
     const savedDataHome = process.env.XDG_DATA_HOME;
     const root = mkdtempSync(path.join(tmpdir(), 'opencode-native-'));
     const records: unknown[] = [];

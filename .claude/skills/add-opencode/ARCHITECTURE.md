@@ -1,7 +1,7 @@
 # OpenCode provider execution and setup
 
 The provider targets NanoClaw's host contract seam version 1 and pins the native
-OpenCode CLI and SDK together at 1.18.25. The skill owns its runtime, host, setup,
+OpenCode CLI and SDK together at 1.18.30. The skill owns its runtime, host, setup,
 and authentication adapters. The core supplies provider contracts, delivery
 wording, the memory renderer, resolved MCP configuration, and container policy.
 
@@ -38,7 +38,7 @@ wording to one file under writable XDG data. The write happens under the existin
 turn lock. The file is listed in native `instructions` next to the group's
 `CLAUDE.md` and `CLAUDE.local.md`.
 
-OpenCode 1.18.25 rereads those files on each model step, including native
+OpenCode 1.18.30 rereads those files on each model step, including native
 continuation after compaction. Task children use the same global configuration
 and inherit the current turn's file. No plugin, native memory hooks, parent walk,
 or per-session snapshot store is needed.
