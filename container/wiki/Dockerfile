@@ -81,6 +81,11 @@ RUN set -eu; \
 ENV UV_CACHE_DIR=/workspace/agent/.cache/uv
 ENV UV_LINK_MODE=copy
 
+# Keep standard ipykernel's normal setup cells, without sending it the optional
+# custom-kernel comm handshake it does not implement. Hash-guarded for 1.10.19.
+COPY patch-quarto-jupyter.py /tmp/patch-quarto-jupyter.py
+RUN /usr/bin/python3 /tmp/patch-quarto-jupyter.py && rm /tmp/patch-quarto-jupyter.py
+
 # Apt packages may introduce privileged executables; retain base hardening.
 RUN find / -xdev -perm -4000 -type f -exec chmod u-s {} +
 USER node

@@ -10,6 +10,14 @@ additional packages locally. `QUARTO_PYTHON` and `RETICULATE_PYTHON` select
 `/usr/bin/python3`; plotting uses a headless backend. Installed package versions
 are recorded in `/opt/wiki-agent-packages.txt`.
 
+The image applies a checksum-checked compatibility patch to Quarto 1.10.19's
+Jupyter integration. Quarto sends an optional custom-kernel setup message to
+standard Python, which has no handler and logs `quarto_kernel_setup` as an error.
+The patch skips that unused message for the standard `python3` kernel; Quarto's
+normal Python setup and execution remain in use. Other/custom kernels retain the
+original message. An upstream source change fails the build for review instead
+of silently applying the patch to a different version.
+
 The agent image uses Debian while production uses Ubuntu. Their execution
 packages cover the same capabilities, but runtime and package versions can differ.
 Additional local packages must also be installed in production before publishing
@@ -104,7 +112,9 @@ The smoke test invokes `check-execution.sh`, which renders Python and R pages
 with `--execute` under production restrictions (offline, read-only root, limited
 memory/CPU), verifies computed output and plots, exercises reticulate, and checks
 that a failing code cell makes validation fail. It also confirms `--execute`
-overrides disabled project-level execution. Run that execution check on its own
+overrides disabled project-level execution, the standard Python setup message is
+clean, and genuine Python and R exceptions remain visible and fail validation.
+Run that execution check on its own
 with `bash scripts/wiki/check-execution.sh`.
 It preserves the existing key pair and regenerates the pinned public config.
 The installer restarts both dedicated services. The signing runtime directory is

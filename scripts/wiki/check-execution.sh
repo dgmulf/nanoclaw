@@ -67,13 +67,32 @@ render() {
     --workdir=/work/source --env=HOME=/tmp --env=XDG_CACHE_HOME=/tmp/.cache \
     --entrypoint=quarto "$image" render . --execute --output-dir=../output
 }
-render
+render 2>&1 | tee "$workspace/render.log"
+if rg -q 'No such comm target registered: quarto_kernel_setup' "$workspace/render.log"; then
+  echo 'ERROR: standard Python kernel received an unsupported Quarto setup message' >&2
+  exit 1
+fi
 rg -q PYTHON_EXECUTION_VERIFIED "$workspace/output/index.html"
 rg -q R_EXECUTION_VERIFIED "$workspace/output/r.html"
 test -n "$(find "$workspace/output/index_files" -name '*.png' -print -quit)"
 test -n "$(find "$workspace/output/r_files" -name '*.png' -print -quit)"
 
-# A failing cell must fail the validation command, rather than permit publishing.
+# Python exceptions must remain visible and reject validation.
+cp "$workspace/source/index.qmd" "$workspace/python-original.qmd"
+cat >> "$workspace/source/index.qmd" <<'EOF'
+
+```{python}
+raise RuntimeError("EXPECTED_WIKI_PYTHON_FAILURE")
+```
+EOF
+if render > "$workspace/python-failure.log" 2>&1; then
+  echo 'ERROR: rendering a failing Python cell unexpectedly succeeded' >&2
+  exit 1
+fi
+rg -q 'RuntimeError.*EXPECTED_WIKI_PYTHON_FAILURE' "$workspace/python-failure.log"
+mv "$workspace/python-original.qmd" "$workspace/source/index.qmd"
+
+# A failing R cell must also reject validation.
 cat >> "$workspace/source/r.qmd" <<'EOF'
 
 ```{r}
@@ -85,4 +104,4 @@ if render > "$workspace/expected-failure.log" 2>&1; then
   exit 1
 fi
 rg -q EXPECTED_WIKI_VALIDATION_FAILURE "$workspace/expected-failure.log"
-echo 'PASS: offline Python, R, reticulate, plotting, and failing-cell validation'
+echo 'PASS: clean Python setup, offline Python/R, reticulate, plots, and Python/R error reporting'
