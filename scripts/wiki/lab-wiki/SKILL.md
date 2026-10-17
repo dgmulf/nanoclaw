@@ -6,8 +6,7 @@ description: Validate, stage, and publish updates to the Quarto wiki through its
 # Lab Wiki
 
 The wiki is a static Quarto website. Its canonical source is the host bare Git
-repository `/srv/wiki/source.git`, branch `main`. The private live site is
-https://clamber.exe.xyz:8080/.
+repository `/srv/wiki/source.git`, branch `main`.
 
 ## Access and workspace
 
@@ -69,8 +68,6 @@ workflow. A draft or preview request stops before pushing.
    before retrying; stop and report if conflicts or repeated contention prevent
    a safe update. Never publish after a failed check or render.
 
+After a successful push, report the pushed commit and container-local validation
+results. This completes the workflow; no live-site fetch or validation is required.
 The host renders asynchronously and atomically activates successful output.
-Report the pushed commit and validation results; **push accepted does not mean
-deployment succeeded**. Verify the changed live page if accessible; otherwise say
-publication is queued/unverified. Browser access may require the user's exe.dev
-session. Do not attempt SSH shell commands to read host deployment files.
