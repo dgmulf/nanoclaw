@@ -7,7 +7,7 @@ image="$(NANOCLAW_PROJECT_ROOT="$project_root" container_image_base):lab-wiki"
 base_image="$(NANOCLAW_PROJECT_ROOT="$project_root" container_image_base):latest"
 docker run --rm --network=none --entrypoint sh "$base_image" -c '
   set -eu
-  for tool in ssh python3 gcc quarto uv; do
+  for tool in ssh python3 gcc R Rscript quarto uv; do
     if command -v "$tool"; then
       echo "ERROR: Lab-only tool $tool leaked into the standard base image" >&2
       exit 1
@@ -15,6 +15,7 @@ docker run --rm --network=none --entrypoint sh "$base_image" -c '
   done
   echo "PASS: standard base excludes Lab-only tools"
 '
+bash "$project_root/scripts/wiki/check-execution.sh" "$image"
 work=$(mktemp -d "$project_root/.tmp-wiki-check.XXXXXXXX")
 trap 'rm -rf -- "$work"' EXIT
 docker run --rm --user "$(id -u):$(id -g)" \
@@ -35,9 +36,25 @@ docker run --rm --user "$(id -u):$(id -g)" \
     git diff --check
     mkdir ../source
     git archive HEAD | tar -xf - -C ../source
-    (cd ../source && quarto render . --no-execute --output-dir=../output)
-    test -f ../output/index.html
-    test -z "$(find ../output -mindepth 1 ! -type f ! -type d -print -quit)"
+  '
+# Execute the exported site separately, without the Git authentication socket,
+# using the same network, filesystem, and resource restrictions as production.
+docker run --rm --network=none --user="$(id -u):$(id -g)" \
+  --cap-drop=ALL --security-opt=no-new-privileges \
+  --memory=2g --cpus=2 --pids-limit=256 --read-only \
+  --tmpfs=/tmp:rw,nosuid,nodev,size=512m \
+  --mount="type=bind,src=$work,dst=/work" \
+  --workdir=/work/source --env=HOME=/tmp --env=XDG_CACHE_HOME=/tmp/.cache \
+  --entrypoint=quarto "$image" render . --execute --output-dir=../output
+test -f "$work/output/index.html"
+test -z "$(find "$work/output" -mindepth 1 ! -type f ! -type d -print -quit)"
+docker run --rm --user "$(id -u):$(id -g)" \
+  --add-host=host.docker.internal:host-gateway \
+  --mount "type=bind,src=$work,dst=/workspace/agent" \
+  --mount type=bind,src=/run/wiki-lab-agent,dst=/workspace/extra/wiki-ssh,readonly \
+  --workdir /workspace/agent/checkout --entrypoint bash "$image" -lc '
+    set -euo pipefail
+    export GIT_SSH_COMMAND="ssh -F /workspace/extra/wiki-ssh/config"
     git push --dry-run origin HEAD:main
     if ssh -F /workspace/extra/wiki-ssh/config lab-wiki id; then
       echo "ERROR: host shell access was allowed" >&2; exit 1

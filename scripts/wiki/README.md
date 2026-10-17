@@ -3,7 +3,19 @@
 ## Agent installation
 
 The separate `container/wiki/Dockerfile` installs Quarto **1.10.19** (matching the server),
-uv/uvx **0.13.1**, Python and build tools, and OpenSSH. Release archives are
+uv/uvx **0.13.1**, Python/Jupyter, R/knitr, build tools, and OpenSSH. Python includes
+NumPy, pandas, SciPy, Matplotlib, and seaborn; R includes rmarkdown, ggplot2, dplyr,
+tidyr, readr, and reticulate. R development headers and compilers support building
+additional packages locally. `QUARTO_PYTHON` and `RETICULATE_PYTHON` select
+`/usr/bin/python3`; plotting uses a headless backend. Installed package versions
+are recorded in `/opt/wiki-agent-packages.txt`.
+
+The agent image uses Debian while production uses Ubuntu. Their execution
+packages cover the same capabilities, but runtime and package versions can differ.
+Additional local packages must also be installed in production before publishing
+code that needs them; the production renderer cannot download packages or data.
+
+Release archives are
 checksum-pinned for amd64 and arm64. The standard base image has none of these
 wiki-specific additions. Build the base with `./container/build.sh`, then build
 the derived Lab image with `bash scripts/wiki/build-image.sh`.
@@ -88,6 +100,12 @@ base-image tool exclusion, Lab tool versions, a clean committed-source render,
 dry-run push, rejected shell/other-repo
 requests, and uv cache persistence across container recreation. It never changes
 remote refs.
+The smoke test invokes `check-execution.sh`, which renders Python and R pages
+with `--execute` under production restrictions (offline, read-only root, limited
+memory/CPU), verifies computed output and plots, exercises reticulate, and checks
+that a failing code cell makes validation fail. It also confirms `--execute`
+overrides disabled project-level execution. Run that execution check on its own
+with `bash scripts/wiki/check-execution.sh`.
 It preserves the existing key pair and regenerates the pinned public config.
 The installer restarts both dedicated services. The signing runtime directory is
 preserved across restarts, keeping existing container bind mounts attached while

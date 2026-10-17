@@ -9,13 +9,42 @@ FROM ${BASE_IMAGE}
 USER root
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
-    apt-get update && apt-get install -y --no-install-recommends \
+    apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
         openssh-client \
         python3 \
         python3-dev \
         python3-venv \
+        python3-ipykernel \
+        python3-nbclient \
+        python3-nbformat \
+        python3-yaml \
+        python3-numpy \
+        python3-pandas \
+        python3-matplotlib \
+        python3-scipy \
+        python3-seaborn \
+        r-base-core \
+        r-base-dev \
+        r-cran-knitr \
+        r-cran-rmarkdown \
+        r-cran-ggplot2 \
+        r-cran-dplyr \
+        r-cran-tidyr \
+        r-cran-readr \
+        r-cran-reticulate \
         build-essential \
+    && dpkg-query -W > /opt/wiki-agent-packages.txt \
     && rm -rf /var/lib/apt/lists/*
+
+# Match production's execution capabilities. Debian and production's Ubuntu
+# provide different Python/R package versions; the manifest records this image.
+ENV QUARTO_PYTHON=/usr/bin/python3 \
+    RETICULATE_PYTHON=/usr/bin/python3 \
+    MPLBACKEND=Agg \
+    MPLCONFIGDIR=/tmp/matplotlib \
+    JUPYTER_PLATFORM_DIRS=1 \
+    OPENBLAS_NUM_THREADS=1 \
+    OMP_NUM_THREADS=1
 
 # ---- Wiki authoring + Python environments -----------------------------------
 # Match the wiki server renderer. Checksums are the sha256 digests published
