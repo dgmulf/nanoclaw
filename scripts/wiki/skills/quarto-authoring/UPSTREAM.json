@@ -1,0 +1,34 @@
+{
+  "repository": "https://github.com/posit-dev/skills",
+  "commit": "4400f97e73807dd0ead3f20cc2ad3ab3e10f568f",
+  "path": "quarto/quarto-authoring",
+  "retrieved_at": "2026-10-17",
+  "license_files": [
+    "LICENSE"
+  ],
+  "adaptations": [],
+  "upstream_sha256": {
+    "SKILL.md": "57beae14195562148b1cb9409cd95228df52265d0d7ace639004014f8b95df16",
+    "references/callouts.md": "863479912da38686199abe2485d4e9267d4c6a4bc0aa814fb1304b1de3d84a8a",
+    "references/citations.md": "b6edaa85f830ff4fd5cad09cea0f7f32bfebb9a377cc584bee764359b642c766",
+    "references/code-cells.md": "4a8d72a1bdf769be4c572a9b0ed27e0117e2865fa8cba3d607d783d012114f49",
+    "references/conditional-content.md": "f7d65df97e7e33d21b702d8a8fb6d3457140842aaa38ae16c346a4ce89cab788",
+    "references/conversion-blogdown.md": "cecab8b02794115038d3f43a242c7f0cd1636275e3bcf928b102e32d7856bd3f",
+    "references/conversion-bookdown.md": "d994073b9c95094608e899ffef9188ea01b1beb69e84ccd00f77f18480a3dc6e",
+    "references/conversion-distill.md": "69039bbcd6662732140e3e063f334c8260f59dd6dc4373e16771e5b0f760b656",
+    "references/conversion-jupyter.md": "e6fc800e301efa4bf51d0479606717dd83338fd2eec8dd43b5603ddbe1520a15",
+    "references/conversion-rmarkdown.md": "aee6105ef6be251597579a7272b64a6f6fa2e57aa42eab588f13d50dbaa363b0",
+    "references/conversion-xaringan.md": "d74d20d93204c525a1b5de0fc78e7517018cb1b9c21fbb1d67e837c033e73a89",
+    "references/cross-references.md": "57a585e11dce835277b83f6298bdbaf2e8174fef922007ea4015bad997221be7",
+    "references/diagrams.md": "c3d9252d2b976596fda58318cd5b652e1392aa57d03c4016f101134f219a00b3",
+    "references/divs-and-spans.md": "3acbf9269262c56c18e9767dd76c1c540bfdaadfa2c97a787b16e22252683bcb",
+    "references/engines.md": "67c3b219205a9e8c8e0e39341fd6a4315eaf66c881eae898e484b9af4d324bbf",
+    "references/extensions.md": "7560b3bd1cf2c5a714bc86983730caccf69c2e3a9065f6eef32cedb284bc653d",
+    "references/figures.md": "ae91b395c8230872101d330e97e6ff53aa6e084901fac674a31a59d9a2c2bec9",
+    "references/layout.md": "5653a57e9f93bf62ae2d01f2a9efec81072c516f969598b4566ef59dc092404b",
+    "references/markdown-linting.md": "aa755c5ff3f8945102eb077b35011cbc2c08f833fbf1fbf402eba9e08737b447",
+    "references/shortcodes.md": "3dd7acd7ac4091664c76e7d45abc92d6595d17332cbc93e545bb6d21276e852b",
+    "references/tables.md": "5c4f680fd6cbe784af5f7c10fd32b863305913f20b698b9352d2cae47ea08991",
+    "references/yaml-front-matter.md": "f02718e10b56faf777921f0a01414e6534d771b83db1ae2f7dc435e776f74233"
+  }
+}

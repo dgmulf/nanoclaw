@@ -1,0 +1,16 @@
+{
+  "repository": "https://github.com/astral-sh/claude-code-plugins",
+  "commit": "f3ce88a7ba830f53afd6d944c1d0278ed318e142",
+  "path": "plugins/astral/skills/uv",
+  "retrieved_at": "2026-10-17",
+  "license_files": [
+    "LICENSE-APACHE",
+    "LICENSE-MIT"
+  ],
+  "adaptations": [
+    "Corrected uvx python@3.12 example to uv run -p 3.12 python (interpreter selection, not PyPI tool execution)."
+  ],
+  "upstream_sha256": {
+    "SKILL.md": "6553a22dbe4251ec851e0d1952d11e801c07a8a6d9bab21e86aa8e6764d147db"
+  }
+}

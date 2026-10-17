@@ -1,0 +1,10 @@
+#!/bin/sh
+# Installed root-owned; never interpret an SSH command as shell code.
+set -eu
+case "${SSH_ORIGINAL_COMMAND:-}" in
+  "git-upload-pack '/srv/wiki/source.git'")
+    exec /usr/bin/git-upload-pack /srv/wiki/source.git ;;
+  "git-receive-pack '/srv/wiki/source.git'")
+    exec /usr/bin/git-receive-pack /srv/wiki/source.git ;;
+  *) printf '%s\n' 'Only the wiki Git repository is available.' >&2; exit 126 ;;
+esac
