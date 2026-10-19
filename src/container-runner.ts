@@ -100,6 +100,11 @@ import type { AgentGroup, Session } from './types.js';
 const SHM_SIZE_MB = 1024;
 /** Grace before SIGKILL. One second, as `docker stop -t 1` has always been. */
 const STOP_GRACE_SECONDS = 1;
+/** Per-group cache dir name → its container path (see the Dockerfile's Python/R block). */
+const PACKAGE_CACHE_MOUNTS: ReadonlyArray<readonly [string, string]> = [
+  ['uv', '/home/node/.cache/uv'],
+  ['renv', '/home/node/.cache/R/renv'],
+];
 
 /** Active sessions tracked by session ID. */
 interface ActiveSessionRuntime {
@@ -1179,6 +1184,17 @@ export async function buildMounts(
       mountClass: 'group-state',
       scope,
     });
+  }
+
+  // Package caches (uv, renv) persist across container boots so a fresh
+  // session builds its environments from local wheels and binaries instead of
+  // refetching them. Per agent group, not install-wide: a cache one group can
+  // write is code every other group would run. Container paths match the
+  // UV_CACHE_DIR / RENV_PATHS_CACHE the image sets and pre-creates.
+  for (const [name, containerPath] of PACKAGE_CACHE_MOUNTS) {
+    const hostPath = path.join(DATA_DIR, 'v2-sessions', agentGroup.id, '.cache', name);
+    fs.mkdirSync(hostPath, { recursive: true });
+    mounts.push({ hostPath, containerPath, readonly: false, mountClass: 'group-state', scope });
   }
 
   // Shared agent-runner source — read-only, same code for all groups.

@@ -531,6 +531,8 @@ describe('buildMounts agent surfaces', () => {
       '/app/.nanoclaw-session.json',
       '/workspace/agent',
       '/workspace/agent/plugins',
+      '/home/node/.cache/uv',
+      '/home/node/.cache/R/renv',
       '/app/src',
       '/app/skills',
       '/workspace/extra/operator',
