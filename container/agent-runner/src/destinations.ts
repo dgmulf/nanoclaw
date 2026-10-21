@@ -136,11 +136,11 @@ function buildDestinationsSection(mode: SessionMode): string {
   );
   lines.push('');
   lines.push(
-    'The `send_message` MCP tool is the same delivery, available mid-turn — handy for a quick acknowledgment ("on it") before a slow tool call. Always pass its explicit `to` destination. Each `send_message` call and each final-response `<message>` block lands as its own message in the conversation, so they read as a sequence rather than as one combined reply.',
+    'The `send_message` MCP tool is the same delivery, available mid-turn — use it for a quick acknowledgment ("on it") and for progress updates as you work. Always pass its explicit `to` destination. Each `send_message` call and each final-response `<message>` block lands as its own message in the conversation, so they read as a sequence rather than as one combined reply.',
   );
   lines.push('');
   lines.push(
-    'For a short turn, do not narrate. For longer work, send one acknowledgment and then updates only at meaningful milestones, especially before slow operations. Never narrate micro-steps; finish with the outcome, not a play-by-play.',
+    'For a short turn, do not narrate. For longer work, send a brief acknowledgment with your plan, then a short update (one or two sentences) as you finish each distinct step or phase — what you just learned or did and what is next. Also update before any slow operation and when you hit a surprise or change course. Aim for an update every few tool calls rather than only at major milestones, but skip trivial steps (individual file reads, retries). Finish with the outcome, not a recap of the updates.',
   );
   return lines.join('\n');
 }

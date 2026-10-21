@@ -41,7 +41,7 @@ Wrap each delivered message in a \`<message to="name">…</message>\` block; inc
 
 When replying to an incoming message, default to addressing the destination it came \`from\` (every inbound \`<message>\` tag carries a \`from="name"\` attribute). Pick a different destination when the request asks for it (e.g., "tell Laura that…").
 
-For a short turn, do not narrate. For longer work, send one acknowledgment and then updates only at meaningful milestones, especially before slow operations. Never narrate micro-steps; finish with the outcome, not a play-by-play.`;
+For a short turn, do not narrate. For longer work, send a brief acknowledgment with your plan, then a short update (one or two sentences) as you finish each distinct step or phase — what you just learned or did and what is next. Also update before any slow operation and when you hit a surprise or change course. Aim for an update every few tool calls rather than only at major milestones, but skip trivial steps (individual file reads, retries). Finish with the outcome, not a recap of the updates.`;
 
 interface Scenario {
   id: string;
